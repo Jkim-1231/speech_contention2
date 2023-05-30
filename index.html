@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>実験①</title>
+    <style>
+        #emoji {
+            position: absolute;
+            font-size: 650px;
+            top: 42%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            pointer-events: none;
+            animation: fade-out 3s ease-in-out forwards;
+        }
+
+        #topic1 {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3.2rem;
+            color: black;
+            text-align: center;
+            z-index: 10;
+            white-space: nowrap;
+            z-index: 0;
+
+            padding: 0.01rem 0.02rem;
+            border: 6px double #000;
+        }
+
+        #topic2 {
+            position: absolute;
+            top: 21%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.6rem;
+            color: black;
+            text-align: center;
+            z-index: 10;
+            white-space: nowrap;
+            z-index: 0;
+            /* 改行を無視するnowrapを設定 */
+        }
+
+        .timer-container {
+            text-align: center;
+        }
+
+        #timer {
+            position: absolute;
+            top: 23%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3.5rem;
+        }
+
+        #startTimer {
+            position: absolute;
+            left: 47.5%;
+        }
+
+        #timer {
+            font-size: 80px;
+            margin-top: 50px;
+            color: black;
+        }
+    </style>
+</head>
+
+<!-- <body bgcolor=#cde9ff> -->
+
+<body>
+    <div id="container">
+        <div id="emoji"></div>
+    </div>
+    <div id="topic1">
+        <font color="#c7000b"><b>発話衝突を肯定的に捉えて</b></font>議論を行ってください
+    </div>
+    <div id="topic2">議題：西日本を象徴する観光地を一つに決めてください</div>
+
+    <button id="startTimer">Start Timer</button>
+    <div id="timer">5:00</div>
+
+
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+    <script>
+        let socket = io();
+        document.querySelector('#startTimer').addEventListener('click', () => {
+            socket.emit('startTimer');
+        });
+
+        socket.on('updateTimer', (currentTime) => {
+            document.querySelector('#timer').textContent = currentTime;
+        });
+
+        document.addEventListener("keydown", function (event) {
+            if (event.ctrlKey && event.altKey && event.shiftKey) {
+                var emoji = document.getElementById('emoji');
+                emoji.innerHTML = '👍';
+                emoji.style.opacity = 1;
+
+                setTimeout(function () {
+                    emoji.style.transition = 'opacity 3s';
+                    emoji.style.opacity = 0;
+                }, 2000);
+                emoji.style.transition = 'opacity 0s';
+                socket.emit("like1", emoji.innerHTML);
+            }
+        });
+        socket.on("like1", function (emoji1) {
+            console.log(emoji1);
+            var emoji = document.getElementById('emoji');
+            emoji.innerHTML = '👍';
+            emoji.style.opacity = 1;
+            setTimeout(function () {
+                emoji.style.transition = 'opacity 3s';
+                emoji.style.opacity = 0;
+            }, 2000);
+            emoji.style.transition = 'opacity 0s';
+        });
+
+    </script>
+</body>
+
+</html>
